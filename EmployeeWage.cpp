@@ -5,6 +5,7 @@ using namespace std;
 const int RATE_PER_HOUR = 20;
 const int FULL_DAY_WORK = 1;
 const int PART_DAY_WORK = 2;
+const int TOTAL_WORKING_DAYS = 20;
 
 class Employee
 {
@@ -17,7 +18,6 @@ public:
 
 int Employee ::checkAttendance()
 {
-    srand(time(0));
     return (rand() % 3);
 }
 
@@ -39,10 +39,20 @@ int Employee ::getDailyWage(int attendance)
 
 int main()
 {
+    srand(time(0));
     cout << "\nWelcome To Employee Wage Computation\n"
          << endl;
     Employee empObj;
-    int attendance = empObj.checkAttendance();
-    cout << "Employee's today's wage is : " << empObj.getDailyWage(attendance) << endl;
+    int days = 0;
+    int totalWage = 0;
+    while (days < TOTAL_WORKING_DAYS)
+    {
+        int attendance = empObj.checkAttendance();
+        int dailyWage = empObj.getDailyWage(attendance);
+        totalWage += dailyWage;
+        cout << "Day :" << (days + 1) << "  Wage : " << dailyWage << endl;
+        days++;
+    }
+    cout << "Montly wage : " << totalWage << endl;
     return 0;
 }
