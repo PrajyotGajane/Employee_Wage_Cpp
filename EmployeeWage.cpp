@@ -3,7 +3,8 @@
 using namespace std;
 
 const int RATE_PER_HOUR = 20;
-const int PRESENT = 1;
+const int FULL_DAY_WORK = 1;
+const int PART_DAY_WORK = 2;
 
 class Employee{
     int empHours;
@@ -14,13 +15,15 @@ class Employee{
 
 int Employee :: checkAttendance(){
     srand(time(0));
-    return (rand() % 2);  
+    return (rand() % 3);  
 }
 
 int Employee :: getDailyWage(int attendance){
-    if (attendance == PRESENT)
+    if (attendance == FULL_DAY_WORK)
         empHours = 8;
-    else
+    else if (attendance == PART_DAY_WORK)
+            empHours = 4;
+    else        
         empHours = 0;
    return empHours * RATE_PER_HOUR;
 }
