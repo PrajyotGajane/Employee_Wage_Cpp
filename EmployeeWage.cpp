@@ -15,14 +15,15 @@ class Employee
 public:
     int checkAttendance();
     int getDailyHours(int);
+    void calculateWage(Employee);
 };
 
-int Employee ::checkAttendance()
+int Employee :: checkAttendance()
 {
     return (rand() % 3);
 }
 
-int Employee ::getDailyHours(int attendance)
+int Employee :: getDailyHours(int attendance)
 {
     switch (attendance)
     {
@@ -38,12 +39,8 @@ int Employee ::getDailyHours(int attendance)
     return empHours;
 }
 
-int main()
+void Employee :: calculateWage(Employee empObj)
 {
-    srand(time(0));
-    cout << "\nWelcome To Employee Wage Computation\n"
-         << endl;
-    Employee empObj;
     int days = 0;
     int totalHours = 0;
     int totalWage = 0;
@@ -58,5 +55,15 @@ int main()
     }
     cout << "Total Hours worked : " << totalHours << endl;
     cout << "Montly wage : " << totalWage << endl;
+}
+
+int main()
+{
+    srand(time(0));
+    Employee empObj;
+    cout << "\nWelcome To Employee Wage Computation\n"
+         << endl;
+
+    empObj.calculateWage(empObj);   
     return 0;
 }
