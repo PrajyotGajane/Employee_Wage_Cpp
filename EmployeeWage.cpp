@@ -1,69 +1,214 @@
 #include <iostream>
+#include <time.h>
 #include <ctime>
+#include <list>
+#include <vector>
+#include <fstream>
+#include <algorithm>
+
 using namespace std;
 
-const int RATE_PER_HOUR = 20;
-const int FULL_DAY_WORK = 1;
-const int PART_DAY_WORK = 2;
-const int TOTAL_WORKING_DAYS = 20;
-const int TOTAL_WORKING_HOURS = 100;
+int totalEmpHrs;
 
-class Employee
+class CompanyDetails
 {
-    int empHours;
+    string companyName;
+    int wagePerHour;
+    int workingDays;
+    int maxHours;
 
 public:
-    int checkAttendance();
-    int getDailyHours(int);
-    void calculateWage(Employee);
+    void getCompanyDetails();
+    void employeeDaily(CompanyDetails);
+    void employeeMonthly(CompanyDetails, string);
+    void setCompanyObjectDetails(CompanyDetails);
 };
 
-int Employee :: checkAttendance()
+struct EmpDailyDetails
 {
-    return (rand() % 3);
+    string empName;
+    int dayNo;
+    int wagePerHour;
+    int hours;
+    int wage;
+    int monthNo;
+    int totalWage;
+    string companyName;
+};
+
+struct EmpMonthlyDetails
+{
+    string empName;
+    int wagePerHour;
+    int totalHours;
+    int monthlyWage;
+    int monthNo;
+    string companyName;
+};
+
+vector<EmpMonthlyDetails* > monthlyEmpList;
+vector<EmpDailyDetails* > dailyEmpList;
+vector<CompanyDetails > companyList;
+
+int getMonthlyEmployeeHours()
+{
+    return totalEmpHrs;
 }
 
-int Employee :: getDailyHours(int attendance)
+int getDailyEmployeeHours()
 {
-    switch (attendance)
+    const int IS_PART_TIME = 1;
+    const int IS_FULL_TIME = 2;
+    int empHrs = 0;
+    int empCheck = rand() % 3;
+    switch (empCheck)
     {
-    case FULL_DAY_WORK:
-        empHours = 8;
+    case IS_PART_TIME:
+        empHrs = 4;
         break;
-    case PART_DAY_WORK:
-        empHours = 4;
+    case IS_FULL_TIME:
+        empHrs = 8;
         break;
     default:
-        empHours = 0;
+        empHrs = 0;
+        break;
     }
-    return empHours;
+    return empHrs;
 }
 
-void Employee :: calculateWage(Employee empObj)
+void CompanyDetails ::employeeMonthly(CompanyDetails company, string empName)
 {
-    int days = 0;
-    int totalHours = 0;
+    EmpMonthlyDetails *emp;
+    emp = new EmpMonthlyDetails;
+    emp->empName = empName;
+    emp->totalHours = getMonthlyEmployeeHours();
+    emp->monthlyWage = emp->totalHours * company.wagePerHour;
+    emp->wagePerHour = company.wagePerHour;
+    emp->companyName = company.companyName;
+
+    monthlyEmpList.push_back(emp);
+}
+
+void CompanyDetails ::employeeDaily(CompanyDetails company)
+{
+    string empName;
+    cout << "Enter Employee name " << endl;
+    cin >> empName;
+
+    int NUM_OF_WORKING_DAYS = company.workingDays;
+    int MAX_HRS_IN_MONTH = company.maxHours;
+    totalEmpHrs = 0;
+    int totalWorkingDays = 0;
     int totalWage = 0;
-    while (days < TOTAL_WORKING_DAYS && totalHours < TOTAL_WORKING_HOURS)
+
+    while (totalEmpHrs <= MAX_HRS_IN_MONTH && totalWorkingDays < NUM_OF_WORKING_DAYS)
     {
-        int attendance = empObj.checkAttendance();
-        int dailyHours = empObj.getDailyHours(attendance);
-        totalHours += dailyHours;
-        totalWage += dailyHours * RATE_PER_HOUR;
-        cout << "Day :" << (days + 1) << "  Wage : " << (dailyHours * RATE_PER_HOUR) << endl;
-        days++;
+        totalWorkingDays++;
+        EmpDailyDetails *empDaily;
+        empDaily = new EmpDailyDetails;
+        empDaily->empName = empName;
+        empDaily->dayNo = totalWorkingDays;
+        empDaily->hours = getDailyEmployeeHours();
+        empDaily->wage = empDaily->hours * company.wagePerHour;
+        empDaily->wagePerHour = company.wagePerHour;
+        empDaily->monthNo = 1;
+        empDaily->companyName = company.companyName;
+        totalWage += empDaily->hours * company.wagePerHour;
+        empDaily->totalWage = totalWage;
+        dailyEmpList.push_back(empDaily);
+        totalEmpHrs += empDaily->hours;
     }
-    cout << "Total Hours worked : " << totalHours << endl;
-    cout << "Montly wage : " << totalWage << endl;
+    employeeMonthly(company, empName);
+}
+
+void display()
+{
+    cout << "Name  Total-Hours  Montly-Wage  Wage-Per-Hour  Company-Name " << endl;
+    for (auto address = monthlyEmpList.begin(); address != monthlyEmpList.end(); ++address)
+    {
+        cout << (*address)->empName << "       " << (*address)->totalHours << "          " << (*address)->monthlyWage << "         " << (*address)->wagePerHour << "          " << (*address)->companyName << endl;
+    }
+}
+
+void CompanyDetails :: setCompanyObjectDetails(CompanyDetails company)
+{
+    bool endKey = true;
+
+    while (endKey)
+    {
+        int choice;
+        cout << "\n1) Enter employee name  2) Display  4) Exit : ";
+        cin >> choice;
+        switch (choice)
+        {
+        case 1:
+            employeeDaily(company);
+            break;
+        case 2:
+            display();
+            break;
+        case 4:
+            endKey = false;
+            break;
+        default:
+            cout << "Invalid Input" << endl;
+            break;
+        }
+    }
+}
+
+void CompanyDetails ::getCompanyDetails()
+{
+    string companyName;
+    int rate;
+    int workingDays;
+    int maxHours;
+    cout << "Enter the details of the company\n"
+         << endl;
+    cout << "Enter the name of company" << endl;
+    cin >> companyName;
+    cout << "Enter the wage per hours of company" << endl;
+    cin >> rate;
+    cout << "Enter the working day of company" << endl;
+    cin >> workingDays;
+    cout << "Enter the max hours of company" << endl;
+    cin >> maxHours;
+
+    CompanyDetails company;
+    company.companyName = companyName;
+    company.wagePerHour = rate;
+    company.workingDays = workingDays;
+    company.maxHours = maxHours;
+    setCompanyObjectDetails(company);
+    companyList.push_back(company);
 }
 
 int main()
 {
-    srand(time(0));
-    Employee empObj;
-    cout << "\nWelcome To Employee Wage Computation\n"
-         << endl;
+    string companyName;
+    bool endKey = true;
+    CompanyDetails companyDetails;
+    while (endKey)
+    {
+        int choice;
+        cout << "\n1: Enter new company details  2: Display  4: Exit " << endl;
+        cin >> choice;
 
-    empObj.calculateWage(empObj);   
+        switch (choice)
+        {
+        case 1:
+            companyDetails.getCompanyDetails();
+            break;
+        case 2:
+            display();
+            break;    
+        case 4:
+            endKey = false;
+            break;
+        default:
+            cout << "Invalid Input" << endl;
+            break;
+        }
+    }
     return 0;
 }
