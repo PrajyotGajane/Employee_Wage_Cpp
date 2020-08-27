@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "Company.h"
+#include "EmployeeWageComputationInterface.hpp"
 
 using namespace std;
 
