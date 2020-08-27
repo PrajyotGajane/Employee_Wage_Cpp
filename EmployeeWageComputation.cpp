@@ -2,10 +2,11 @@
 #include <vector>
 #include "Company.h"
 #include "EmployeeWageComputationInterface.hpp"
+#include <list>
 
 using namespace std;
 
-vector<Company> companyDetailsList;
+list<Company> companyDetailsList;
 
 void setCompanyDetails()
 {
