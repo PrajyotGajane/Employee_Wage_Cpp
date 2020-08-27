@@ -1,9 +1,10 @@
 #include "Company.h"
 #include <iostream>
-#include <vector>
+#include <list>
 #include <ctime>
 using namespace std;
 
+list<int> dailyWage;
 Company::Company(string name, int wagePerHour, int workingDays, int maxHours)
 {
     this->name = name;
@@ -48,7 +49,9 @@ void Company::calculateMonthlyWage()
     while (days < workingDays && hours < maxHours)
     {
         int currentDayHours = getDailyEmployeeHours();
-        totalCompWage += wagePerHour * currentDayHours;
+        int currentDaysWage = wagePerHour * currentDayHours;
+        totalCompWage += currentDaysWage;
+        dailyWage.push_back(currentDaysWage);
         days++;
         hours+=currentDayHours;
     }
